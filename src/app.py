@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 model = joblib.load('model/mlr_model_new.pkl')
 
@@ -16,7 +18,14 @@ def predict():
 
     week_number = selected_date.isocalendar()[1]
 
-    population_values = {
+        # Calculate the year difference and update populations accordingly
+    current_year = 2024
+    selected_year = selected_date.year
+    years_difference = selected_year - current_year
+    
+    # Update population values based on the growth rate of 0.2% per year
+    growth_rate = 0.002  # 0.2% as a decimal
+    population_values = {city: int(pop * (1 + growth_rate) ** years_difference) for city, pop in {
         'Colombo' : 648034,
         'Dehiwala': 219827,
         'Homagama': 34664,
@@ -24,7 +33,8 @@ def predict():
         'Maharagama': 66576,
         'Moratuwa': 185031,
         'Pita Kotte': 118179,
-    }
+    }.items()}
+
 
     input_data = {
         'Population': [population_values['Colombo'],population_values['Dehiwala'], population_values['Homagama'],
