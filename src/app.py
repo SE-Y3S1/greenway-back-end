@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 from flask_cors import CORS
-
-
+import random
+import numpy as np
 app = Flask(__name__)
 CORS(app)
 
@@ -18,20 +18,18 @@ def predict():
 
     week_number = selected_date.isocalendar()[1]
 
-        # Calculate the year difference and update populations accordingly
     current_year = 2024
     selected_year = selected_date.year
     years_difference = selected_year - current_year
     
-    # Update population values based on the growth rate of 0.2% per year
-    growth_rate = 0.002  # 0.2% as a decimal
+    growth_rate = 0.006
     population_values = {city: int(pop * (1 + growth_rate) ** years_difference) for city, pop in {
         'Colombo' : 648034,
         'Dehiwala': 219827,
         'Homagama': 34664,
-        'Kottawa': 10464,
+        'Kottawa': 6100,
         'Maharagama': 66576,
-        'Moratuwa': 185031,
+        'Moratuwa': 205031,
         'Pita Kotte': 118179,
     }.items()}
 
@@ -52,14 +50,17 @@ def predict():
     
     input_df = pd.DataFrame(input_data)
 
-    # Make predictions
     predictions = model.predict(input_df)
+
+    noise = np.random.normal(0, 10, size=predictions.shape)  # Mean 0, Std 10
+    predictions_with_noise = predictions + noise
 
     # Prepare results
     cities = ['Colombo', 'Dehiwala', 'Homagama', 'Kottawa', 'Maharagama', 'Moratuwa', 'Pita Kotte']
     result_df = pd.DataFrame({
         'City': cities,
-        'Predicted_Disposed_Amount': predictions
+        #predictions
+        'Predicted_Disposed_Amount': predictions_with_noise
     })
 
     # Sort results and add ranking
