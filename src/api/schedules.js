@@ -41,6 +41,21 @@ router.route("/").get((req,res)=>{
 
 })
 
+router.route("/:id").get(async (req, res) => {
+    const scheduleId = req.params.id;
+    try {
+        const schedule = await Schedule.findById(scheduleId);
+        if (!schedule) {
+            return res.status(404).send({ status: "Schedule not found" });
+        }
+        res.status(200).send(schedule);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ status: "Error fetching schedule", error: err.message });
+    }
+});
+
+
 //update route
 
 router.route("/update/:id").put(async(req,res)=>{
