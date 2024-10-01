@@ -1,5 +1,5 @@
 const router = require ("express").Router();
-let Schedule = require("../models/Schedule");
+let Schedule = require("../application/Schedule");
 
 //create
 router.route("/add").post((req,res)=>{
@@ -88,3 +88,4 @@ router.route("/delete/:id").delete(async(req,res)=>{
 
 
 module.exports = router;
+           
